@@ -7,6 +7,6 @@ This is a repo for creating a docker image which I use to develop my research pr
 #### SSH & SFTP Access
 A non-privileged run of `sshd` on the container. combined with port forwarding on a non-privileged port like `2022`, this allows direct `ssh` and `sftp` access to the container, useful for setting up a remote interpreter in PyCharm.
 
-## Miniconda
+### Miniconda
 
 Miniconda pre-installed, no significant packages added. Images should extend this one and run conda environment set up.
