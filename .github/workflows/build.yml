@@ -21,9 +21,18 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+        -
+        name: Login to Nautilus Gitlab Docker Registry
+        uses: docker/login-action@v2
+        with:
+          registry: gitlab-registry.nrp-nautilus.io
+          username: ${{ secrets.GITLAB_DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.GITLAB_DOCKER_REGISTRY_TOKEN }}
       -
         name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: kingb12/docker-dev-env:latest
+          tags: |
+            gitlab-registry.nrp-nautilus.io/kingb12/docker-dev-env:latest
+            kingb12/docker-dev-env:latest
