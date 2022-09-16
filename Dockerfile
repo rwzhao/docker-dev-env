@@ -21,7 +21,7 @@ EXPOSE 6007
 # Remove any third-party apt sources to avoid issues with expiring keys.
 RUN rm -f /etc/apt/sources.list.d/*.list
 
-# Install some basic utilities
+# Install some basic utilities and python-dev
 RUN apt-get update && apt-get install -y \
     curl \
     zsh \
@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     bzip2 \
     wget \
     libx11-6 \
+    python-dev \
  && rm -rf /var/lib/apt/lists/*
 
 # Create a working directory
