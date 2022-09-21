@@ -96,6 +96,10 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 # Set shell to zsh 
 RUN chsh -s /usr/bin/zsh ${USER}
 
+# Copy my ssh config. Useful (for me) in pulling files onto container and attached volumes
+# from resources I have access to.
+COPY ssh_config /home/${USER}/.ssh/config
+
 # Need to set user as owner of their home directory, now that we've populated things
 RUN chown -R ${USER}:${USER} /home/${USER}
 
