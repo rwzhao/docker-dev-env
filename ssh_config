@@ -1,0 +1,54 @@
+
+Host ssh
+   Hostname ssh.soe.ucsc.edu
+   User bking2
+   LocalForward 7676 127.0.0.1:7676
+   LocalForward 7677 127.0.0.1:7677
+   LocalForward 6007 127.0.0.1:6007
+   LocalForward 8265 127.0.0.1:8265
+
+Host ssh-pycharm
+   Hostname ssh.soe.ucsc.edu
+   User bking2
+
+Host citrisdance
+    Hostname citrisdance
+    User bking2
+    LocalForward 7676 127.0.0.1:7676
+    ProxyCommand ssh ssh -W %h:%p
+
+
+Host nlp-gpu-01
+    Hostname nlp-gpu-01
+    User bking2
+    LocalForward 7676 127.0.0.1:7676
+    LocalForward 7677 127.0.0.1:7677
+    LocalForward 6007 127.0.0.1:6007
+    LocalForward 8265 127.0.0.1:8265
+    ProxyCommand ssh ssh -W %h:%p
+
+Host nlp-gpu-01-pycharm
+    Hostname nlp-gpu-01
+    User bking2
+    ProxyCommand ssh ssh-pycharm -W %h:%p
+
+Host deepcore
+    Hostname deepcore
+    User bking2
+    LocalForward 7676 127.0.0.1:7676
+    ProxyCommand ssh ssh -W %h:%p
+
+Host hb
+    Hostname hb.ucsc.edu
+    User bking2
+#vim    LocalForward 7676 127.0.0.1:7676
+    ProxyCommand ssh ssh -W %h:%p
+
+Host gcloud-1
+    Hostname 35.208.13.53
+    User bking
+
+Host citrisdance-pycharm
+    Hostname citrisdance
+    User bking2
+    ProxyCommand ssh ssh-pycharm -W %h:%p
