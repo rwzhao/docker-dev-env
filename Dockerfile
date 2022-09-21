@@ -100,6 +100,11 @@ RUN chsh -s /usr/bin/zsh ${USER}
 # from resources I have access to.
 COPY ssh_config /home/${USER}/.ssh/config
 
+# Warning! It is generally not advised to trust public keys without checking them yourself. This allows me clone
+# git with ssh on container/job launch without having to accept a fingerprint check (file contains ssh public keys 
+# for github.com). Check these for yourself or remove this step. More detail here: https://serverfault.com/a/701637
+COPY ssh_known_hosts /home/${USER}/.ssh/known_hosts
+
 # Need to set user as owner of their home directory, now that we've populated things
 RUN chown -R ${USER}:${USER} /home/${USER}
 
