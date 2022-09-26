@@ -20,6 +20,10 @@ The features below facilitate a workflow like so:
   - Requires setting a Secret in k8s with `SSH_PRIVATE_KEY`, `SSH_PUBLIC_KEY`. Recommended to not using your personal ssh key here, but create a new one, since this may be visible to anyone in the k8s namespace. You can then register this new key as a [deployment key](https://docs.github.com/en/developers/overview/managing-deploy-keys#deploy-keys) for the appropriate private Github repo(s).
 - Run!
  
+ #### Example Job `command`
+ 
+ Requires a secret defining the SSH key (public and private, load as environment variables), and if needed, a Huggingface API token (also env-variable loaded).
+ 
  ```yaml
          command: [ "/bin/sh" ]
         # commmand does the following:
