@@ -88,7 +88,7 @@ Miniconda pre-installed, no significant packages added. Images should extend thi
 
 ### github.com known hosts
 
-See warning about the security of this, this bypasses the fingerprint check in git clone via ssh by pre-loading the public keys for github.com, so that a repo can be clone on container start. You're implicitly trusting that I did this correctly, see [this ServerFault discussion](https://serverfault.com/a/701637) for details.
+See warning about the security of this, this bypasses the fingerprint check in git clone via ssh by pre-loading the public keys for github.com, so that a repo can be clone on container start. You're implicitly trusting that I did this correctly, see [this ServerFault discussion](https://serverfault.com/a/701637) for details, or [this document from Github](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints).
 
 ### ZSH and oh-my-zsh
 
