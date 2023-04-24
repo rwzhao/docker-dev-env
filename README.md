@@ -2,6 +2,18 @@
 
 This is a repo for creating a docker image which I use to develop my research projects. It is not for deployment, and typically neither are the applications developed using it. It is not intended to be lightweight or plug-and-play ready, but where possible, I tried to make it extensible for other users. Specifically, each of my projects initiates a new Dockerfile from this image, creates its own virtual environemtn and installs project dependencies, plus any other related project set up.
 
+## How to replicate
+1. Fork repository
+2. Change `id_rsa.pub` to your public SSH key or one of your choosing (this will be the one needed to log into th epod vis SSH)
+3. replace all occurrences of `bking2` or `kingb12` with what you want
+  - `bking2` is the user of the docker container, and ssh user generally (e.g. in `ssh_config`)
+  - `kingb12` is the repo owner of the DockerHub/Gitlab account used for upload
+4. Add credentials to Settings/Secrets & Variables/Actions:
+  - `DOCKERHUB_USERNAME`: your Docker Hub user name
+  - `DOCKERHUB_TOKEN`: your Docker Hub API Key
+  - `GITLAB_DOCKER_REGISTRY_USER`: gitlab user name
+  - `GITLAB_DOCKER_REGISTRY_TOKEN`: gitlab API key
+
 ## Motivation
 
 The features below facilitate a workflow like so:
