@@ -11,6 +11,8 @@ ARG gid=20
 ENV USER=${user}  
 ENV UID=${uid}
 ENV GID=${gid}
+# This environment variable will be used by openssh-server
+ENV TZ=America/Los_Angeles
 
 EXPOSE 2022
 EXPOSE 7676
@@ -18,11 +20,9 @@ EXPOSE 7677
 EXPOSE 8265
 EXPOSE 6007
 
-# Remove any third-party apt sources to avoid issues with expiring keys.
-RUN rm -f /etc/apt/sources.list.d/*.list
-
-# Install some basic utilities and python-dev
-RUN apt-get update && apt-get install -y \
+# Remove any third-party apt sources to avoid issues with expiring keys. Then, install some basic utilities and python-dev
+RUN rm -f /etc/apt/sources.list.d/*.list && \
+    apt-get update && apt-get install -y \
     curl \
     zsh \
     ca-certificates \
@@ -38,24 +38,24 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir /soe
 WORKDIR /soe
 
-# Create a non-root user and switch to it
-RUN echo "User: ${USER}"
-RUN groupadd -g ${GID} -o ${USER}
-RUN useradd -u ${UID} -g ${GID} ${USER} && echo "${USER}:${USER}" | chpasswd
-RUN mkdir -p /home/${USER} && chown -R ${USER}:${USER} /home/${USER}
+# Create a non-root user and give it a home directory
+RUN echo "User: ${USER}" && \
+    groupadd -g ${GID} -o ${USER} && \
+    useradd -u ${UID} -g ${GID} ${USER} && \ 
+    echo "${USER}:${USER}" | chpasswd  && \
+    mkdir -p /home/${USER} && chown -R ${USER}:${USER} /home/${USER}
 
-# Adding the openssh-server
-ENV TZ=America/Los_Angeles
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt-get update && apt-get install -y openssh-server vim
+# install openssh-server
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
+    apt-get update && apt-get install -y openssh-server vim
 
 # Setting up a non-privileged ssh directory for sshd
 # see https://www.golinuxcloud.com/run-sshd-as-non-root-user-without-sudo
-RUN mkdir -p /opt/ssh
-RUN ssh-keygen -q -N "" -t dsa -f /opt/ssh/ssh_host_dsa_key
-RUN ssh-keygen -q -N "" -t rsa -b 4096 -f /opt/ssh/ssh_host_rsa_key
-RUN ssh-keygen -q -N "" -t ecdsa -f /opt/ssh/ssh_host_ecdsa_key
-RUN ssh-keygen -q -N "" -t ed25519 -f /opt/ssh/ssh_host_ed25519_key
+RUN mkdir -p /opt/ssh && \
+    ssh-keygen -q -N "" -t dsa -f /opt/ssh/ssh_host_dsa_key && \
+    ssh-keygen -q -N "" -t rsa -b 4096 -f /opt/ssh/ssh_host_rsa_key && \
+    ssh-keygen -q -N "" -t ecdsa -f /opt/ssh/ssh_host_ecdsa_key && \
+    ssh-keygen -q -N "" -t ed25519 -f /opt/ssh/ssh_host_ed25519_key
 
 # Note the custom config defined here, which uses a non-privileged port, 
 # rejects pass word auth, etc. See details in link above
@@ -63,38 +63,33 @@ COPY sshd_config /opt/ssh/sshd_config
 
 # Set up a service for the user to be able to run. Modify on the fly to add env user we created
 COPY sshd-1.service /etc/systemd/sshd-1.service
-RUN sed -i 's/<PUT_USER_HERE>/$USER/' /etc/systemd/sshd-1.service
-RUN cat /etc/systemd/sshd-1.service
+RUN sed -i 's/<PUT_USER_HERE>/$USER/' /etc/systemd/sshd-1.service && cat /etc/systemd/sshd-1.service
 
 # Modify permissions to each folder so user can run
-RUN chmod 600 /opt/ssh/*
-RUN chmod 644 /opt/ssh/sshd_config
-RUN chown ${USER}:${USER} /etc/systemd/sshd-1.service
-RUN chown -R ${USER}:${USER} /opt/ssh/
+RUN chmod 600 /opt/ssh/* && \
+    chmod 644 /opt/ssh/sshd_config && \
+    chown ${USER}:${USER} /etc/systemd/sshd-1.service && \
+    chown -R ${USER}:${USER} /opt/ssh/ && \
+    mkdir -p  /home/${USER}/.ssh
 
-# IMPORTANT: modified config prohibits password auth, preventing brute force
-RUN mkdir -p  /home/${USER}/.ssh
+# IMPORTANT: modified config prohibits password auth, preventing brute force (last step)
 COPY id_rsa.pub /home/${USER}/.ssh/authorized_keys
 
-# All users can use /home/${USER} as their home directory
+# All users can use /home/${USER} as their home directory. Then, update permissions for .ssh to be more restrictive
 ENV HOME=/home/${USER}
-RUN mkdir $HOME/.cache $HOME/.config \
- && chmod -R 755 $HOME
-
- # update permissions for .ssh to be more restrictive
-RUN chmod -R 700 /home/${USER}/.ssh
-RUN chmod 644 /home/${USER}/.ssh/authorized_keys
+RUN mkdir $HOME/.cache $HOME/.config && \
+    chmod -R 755 $HOME && \
+    chmod -R 700 /home/${USER}/.ssh && \
+    chmod 644 /home/${USER}/.ssh/authorized_keys
 
 
 
 # work from the home directory
 WORKDIR /home/${USER}
 
-# Default powerline10k theme, no plugins installed
-RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.2/zsh-in-docker.sh)"
-
-# Set shell to zsh 
-RUN chsh -s /usr/bin/zsh ${USER}
+# Default powerline10k theme, no plugins installed, and set shell to zsh
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.2/zsh-in-docker.sh)" && \
+    chsh -s /usr/bin/zsh ${USER}
 
 # Copy my ssh config. Useful (for me) in pulling files onto container and attached volumes
 # from resources I have access to.
@@ -111,14 +106,14 @@ RUN chown -R ${USER}:${USER} /home/${USER}
 # Now continue with all actions as the non-privileged user
 USER ${USER}
 
-
-RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
-RUN bash "Miniconda3-latest-Linux-x86_64.sh" -b -p "/home/${USER}/miniconda"
-RUN miniconda/bin/conda init --all
+# Setup and install anaconda
+RUN wget "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" && \
+    bash "Miniconda3-latest-Linux-x86_64.sh" -b -p "/home/${USER}/miniconda" && \
+    miniconda/bin/conda init --all
 
 # sone final setup: add this lint to the top of each shell file to turn off output in interactive modes
 # this is required for SFTP to work
-RUN echo "[[ "$-" != *i* ]] && return" > .bashrc
-RUN sed -i '1s/^/[[ "$-" != *i* ]] \&\& return\n/' .zshrc
+RUN echo "[[ "$-" != *i* ]] && return" > .bashrc && sed -i '1s/^/[[ "$-" != *i* ]] \&\& return\n/' .zshrc
 
+# on start up, run openssh-server as non-privileged user!
 CMD ["/usr/sbin/sshd","-D", "-f", "/opt/ssh/sshd_config",  "-E", "/tmp/sshd.log"]
