@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.5.1-base-ubuntu20.04
+FROM nvidia/cuda:12.2.0-base-ubuntu20.04
 
 # default a user name
 ARG user=bking2
