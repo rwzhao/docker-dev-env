@@ -1,7 +1,7 @@
 FROM nvidia/cuda:11.8.0-base-ubuntu20.04
 
 # default a user name
-ARG user=bking2
+ARG user=rzhao17
 
 # user id and group id, helpful to make these same as your host ones
 ARG uid=501
