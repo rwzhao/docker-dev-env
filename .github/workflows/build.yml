@@ -34,5 +34,4 @@ jobs:
         with:
           push: true
           tags: |
-            gitlab-registry.nrp-nautilus.io/rzhao17/docker-dev-env:latest
             rzhao17/docker-dev-env:latest
