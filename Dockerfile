@@ -20,19 +20,19 @@ EXPOSE 7677
 EXPOSE 8265
 EXPOSE 6007
 
-# Remove any third-party apt sources to avoid issues with expiring keys. Then, install some basic utilities and python-dev
-RUN rm -f /etc/apt/sources.list.d/*.list && \
-    apt-get update && apt-get install -y \
-    curl \
-    zsh \
-    ca-certificates \
-    sudo \
-    git \
-    bzip2 \
-    wget \
-    libx11-6 \
-    python-dev \
- && rm -rf /var/lib/apt/lists/*
+# # Remove any third-party apt sources to avoid issues with expiring keys. Then, install some basic utilities and python-dev
+# RUN rm -f /etc/apt/sources.list.d/*.list && \
+#     apt-get update && apt-get install -y \
+#     curl \
+#     zsh \
+#     ca-certificates \
+#     sudo \
+#     git \
+#     bzip2 \
+#     wget \
+#     libx11-6 \
+#     python-dev \
+#  && rm -rf /var/lib/apt/lists/*
 
 # Create a working directory
 RUN mkdir /soe
