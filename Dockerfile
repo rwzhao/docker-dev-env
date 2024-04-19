@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.8.0-base-ubuntu20.04
+FROM nvcr.io/nvidia/pytorch:24.03-py3
 
 # default a user name
 ARG user=rzhao17
